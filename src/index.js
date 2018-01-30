@@ -20,7 +20,8 @@ class App extends React.Component{
         if(localStorage.user){
             this.setState({isAuth:true});
         }else{console.log(`authenticate first`);
-            axios.get(`http://localhost:5454/getUser`).then((res)=>{console.log(`user on componentDidMount:`);if(res.data){
+            axios.get(`http://localhost:5454/getReqUser`,{crossDomain : true,
+                withCredentials: true}).then((res)=>{console.log(`user on componentDidMount:`,res);if(res.data){
                 console.log(res);
                 this.setState({isAuth:true});
                 localStorage.setItem(`user`,res.data);
@@ -39,7 +40,16 @@ changeAuth=()=> {
     render(){
         return(
             this.state.isAuth ? <div><h1>Home</h1><Home/>
-                    <button onClick={()=>{localStorage.clear();this.setState({isAuth:false})}}>logout</button>
+                    <button onClick={()=>{localStorage.clear();this.setState({isAuth:false});
+                        axios({
+                            method: 'get',
+                            url: 'http://localhost:5454/logout',
+                            crossDomain : true,
+                            withCredentials: true
+                        }).then((res)=>{
+                            console.log(res);
+                        }).catch((err)=>{console.log(err)});
+                    }}>logout</button>
                 </div>
                 :
                 <div>
